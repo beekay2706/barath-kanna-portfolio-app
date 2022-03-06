@@ -2,7 +2,6 @@
 // where your node app starts
 
 // init project
- var then = new Date();
 var express = require('express');
 var app = express();
 
@@ -27,6 +26,7 @@ app.get("/api/hello", function (req, res) {
 });
 
 app.get("/api/", function(req,res){
+  let then = new Date();
  res.json({
    "unix": then.getTime(),
    "utc": then.toUTCString()
