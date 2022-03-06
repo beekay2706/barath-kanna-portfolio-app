@@ -22,6 +22,11 @@ app.get("/", function (req, res) {
 // your first API endpoint... 
 app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
+  console.log("Hi Barath");
+});
+
+app.get("api/timestamp/:datestring", function(req, res){
+       res.json({"error":"invalid Date"});
 });
 
 
