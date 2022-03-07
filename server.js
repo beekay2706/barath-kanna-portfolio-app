@@ -36,7 +36,16 @@ app.get("/api/", function(req,res){
  res.json({
    "unix": then.getTime(),
    "utc": then.toUTCString()
-  })
+  });
+
+});
+app.get("/api/whoami", function(req, res){
+  res.json(
+    {
+      "ipaddress": req.ip,
+      "language": req.headers["accept-language"],
+      "software": req.headers["user-agent"]
+    });
 
 });
 app.get("/api/:date_string", function(req, res){
@@ -60,20 +69,14 @@ app.get("/api/:date_string", function(req, res){
          res.json({
                     "unix": passedInValue.getTime(),
                     "utc": passedInValue.toUTCString()
-        })
+        });
        }
 
       //  {"unix": <date.getTime()>, "utc": <date.toUTCString()> }
       
 });
 
-app.get("/api/whoami", function(req, res){
-  res.json(
-    {
-      "value": "Our results"
-    });
 
-});
 
 // listen for requests :)
 var listener = app.listen(port, function () {
