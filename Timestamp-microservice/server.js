@@ -68,7 +68,13 @@ app.get("/api/:date_string", function(req, res){
       
 });
 
+app.get("/api/whoami", function(req, res){
+  res.json(
+    {
+      value: "Our results"
+    });
 
+});
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {

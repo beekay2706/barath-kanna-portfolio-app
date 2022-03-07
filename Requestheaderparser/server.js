@@ -24,7 +24,13 @@ app.get("/", function (req, res) {
 app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
+app.get("/api/whoami", function(req, res){
+  res.json(
+    {
+      "value": "Our results"
+    });
 
+});
 
 
 // listen for requests :)
