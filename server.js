@@ -68,7 +68,8 @@ app.post("/api/shorturl/", (req, res) => {
     original_url: client_requested_url,
     suffix: suffix
   })
-
+   
+ 
   newURL.save((err, doc) => {
     if (err) return console.error(err);
     res.json({
@@ -78,7 +79,12 @@ app.post("/api/shorturl/", (req, res) => {
     });
   });
 });
-
+app.get("/api/shorturl/", function(req, res){
+  res.json({
+    "original_url": "https://www.freecodecamp.org/",
+    "short_url": "1"
+  });
+});
 app.get("/api/shorturl/:suffix", (req, res) => {
   let userGeneratedSuffix = req.params.suffix;
   shortUrl.find({suffix: userGeneratedSuffix}).then(foundUrls => {
