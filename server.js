@@ -77,9 +77,8 @@ else {
   let newShortURL = suffix
 
   let newURL = new ShortURL({
-    short_url: __dirname + "/api/shorturl/" + suffix,
+    short_url: suffix,
     original_url: client_requested_url,
-    suffix: suffix
   })
 
   newURL.save((err, doc) => {
