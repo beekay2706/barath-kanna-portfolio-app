@@ -85,10 +85,8 @@ else {
   newURL.save((err, doc) => {
     if (err) return console.error(err);
     res.json({
-      "saved": true,
-      "short_url": newURL.short_url,
       "orignal_url": newURL.original_url,
-      "suffix": newURL.suffix
+      "short_url": newURL.short_url,
     });
   });
 });
