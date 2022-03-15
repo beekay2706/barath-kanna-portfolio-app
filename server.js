@@ -8,6 +8,7 @@ var mongo = require('mongodb');
 var mongoose = require('mongoose');
 var shortid = require('shortid');
 var bodyParser = require('body-parser');
+var validUrl = require('valid-url');
 var cors = require('cors');
 var app = express();
 var port = process.env.PORT || 3000;
@@ -25,6 +26,7 @@ var ShortURL = mongoose.model("shortUrl",
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC 
 var cors = require('cors');
+const res = require('express/lib/response');
 app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 204
 
 // http://expressjs.com/en/starter/static-files.html
@@ -57,8 +59,19 @@ app.get("/api/hello", function (req, res) {
 });
 // Url shortener microservice 
 
+
+
 app.post("/api/shorturl/", (req, res) => {
   let client_requested_url = req.body.url
+  var url =  client_requested_url;
+if (validUrl.isUri(url)){
+    console.log('Looks like an URI');
+} 
+else {
+    res.json({
+      "error": 'invalid url'
+    })
+}
 
   let suffix = shortid.generate();
   let newShortURL = suffix
@@ -87,6 +100,7 @@ app.get("/api/shorturl/:suffix", (req, res) => {
     res.redirect(urlForRedirect.original_url);
   });
 });
+
 
 // time stamp microservice - 1
 app.get("/api/", function(req,res){
