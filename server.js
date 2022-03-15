@@ -6,7 +6,7 @@ var database_uri = "mongodb+srv://Beekay2706:Maggibeekay2706@cluster0.zlnnw.mong
 var express = require('express');
 var mongo = require('mongodb');
 var mongoose = require('mongoose');
-var shortId = require('shortid');
+var shortid = require('shortid');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 var app = express();
@@ -16,7 +16,7 @@ var port = process.env.PORT || 3000;
 mongoose.connect(database_uri,{useNewUrlParser: true, 
   useUnifiedTopology: true
 });
-var shortUrl = mongoose.model("shortUrl", 
+var ShortURL = mongoose.model("shortUrl", 
   new mongoose.Schema({
     short_url: String,
     original_url: String,
@@ -60,34 +60,29 @@ app.get("/api/hello", function (req, res) {
 app.post("/api/shorturl/", (req, res) => {
   let client_requested_url = req.body.url
 
-  let suffix = shortId.generate();
+  let suffix = shortid.generate();
   let newShortURL = suffix
 
-  let newURL = new shortUrl({
+  let newURL = new ShortURL({
     short_url: __dirname + "/api/shorturl/" + suffix,
     original_url: client_requested_url,
     suffix: suffix
   })
-   
- 
+
   newURL.save((err, doc) => {
     if (err) return console.error(err);
     res.json({
+      "saved": true,
+      "short_url": newURL.short_url,
       "orignal_url": newURL.original_url,
-      "short_url": newURL.suffix
-      
+      "suffix": newURL.suffix
     });
   });
 });
-app.get("/api/shorturl/", function(req, res){
-  res.json({
-    "original_url": "https://www.freecodecamp.org/",
-    "short_url": "1"
-  });
-});
+
 app.get("/api/shorturl/:suffix", (req, res) => {
   let userGeneratedSuffix = req.params.suffix;
-  shortUrl.find({suffix: userGeneratedSuffix}).then(foundUrls => {
+  ShortURL.find({suffix: userGeneratedSuffix}).then(foundUrls => {
     let urlForRedirect = foundUrls[0];
     res.redirect(urlForRedirect.original_url);
   });
