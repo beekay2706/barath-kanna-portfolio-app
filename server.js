@@ -4,11 +4,10 @@ var database_uri = "mongodb+srv://Beekay2706:Maggibeekay2706@cluster0.zlnnw.mong
 
 // init project
 var express = require('express');
-var mongo = require('mongodb');
 var mongoose = require('mongoose');
-var shortid = require('shortid');
 var bodyParser = require('body-parser');
-var validUrl = require('valid-url');
+const dns = require('dns');
+const urlparser = require('url');
 var cors = require('cors');
 var app = express();
 var port = process.env.PORT || 3000;
@@ -17,16 +16,14 @@ var port = process.env.PORT || 3000;
 mongoose.connect(database_uri,{useNewUrlParser: true, 
   useUnifiedTopology: true
 });
-var ShortURL = mongoose.model("shortUrl", 
-  new mongoose.Schema({
-    short_url: String,
-    original_url: String,
-    suffix: String
-}));
+
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC 
 var cors = require('cors');
 const res = require('express/lib/response');
+const { url } = require('inspector');
+const schema = new mongoose.Schema({url: 'string'});
+const Url = mongoose.model('Url', schema);
 app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 204
 
 // http://expressjs.com/en/starter/static-files.html
@@ -59,45 +56,38 @@ app.get("/api/hello", function (req, res) {
 });
 // Url shortener microservice 
 
+app.post('/api/shorturl/',async function(req, res) {
+  console.log(req.body);
+  const bodyurl = req.body.url;
+  const something = dns.lookup(urlparser.parse(bodyurl).hostname,
+     (error, address)  => {
+       if(!address){
+         res.json({error: "invalid url"})
+       } else{
+         const url = new Url({url: bodyurl})
+         url.save((err, data) => {
+           res.json({
+             original_url: data.url,
+             short_url: data.id
+           })
+         })
+       }
+       console.log("dns", error);
+       console.log("address", address);
+     })
+     console.log("something", something);
+});
 
-
-app.post("/api/shorturl/", (req, res) => {
-  let client_requested_url = req.body.url
-  var url =  client_requested_url;
-if (validUrl.isUri(url)){
-    console.log('Looks like an URI');
-} 
-else {
-    res.json({
-      "error": 'invalid url'
-    })
-}
-
-  let suffix = shortid.generate();
-  let newShortURL = suffix
-
-  let newURL = new ShortURL({
-    short_url: suffix,
-    original_url: client_requested_url,
+app.get("/api/shorturl/:id", (req, res)=> {
+  const id = req.params.id;
+  Url.findById(id, (err, data)=> {
+    if(!data){
+      res.json({error: "invalid url"})
+    }else{
+      res.redirect(data.url)
+    }
   })
-
-  newURL.save((err, doc) => {
-    if (err) return console.error(err);
-    res.json({
-      "orignal_url": newURL.original_url,
-      "short_url": newURL.short_url,
-    });
-  });
-});
-
-app.get("/api/shorturl/:suffix", (req, res) => {
-  let userGeneratedSuffix = req.params.suffix;
-  ShortURL.find({suffix: userGeneratedSuffix}).then(foundUrls => {
-    let urlForRedirect = foundUrls[0];
-    res.redirect(urlForRedirect.original_url);
-  });
-});
-
+})
 
 // time stamp microservice - 1
 app.get("/api/", function(req,res){
