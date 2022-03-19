@@ -77,13 +77,12 @@ app.get("/api/hello", function (req, res) {
   console.log("Hi Barath");
 });
 // File meta data microservice
-app.post("/api/fileanalyse", upload.single('upfile'), (req, res) => {
+app.post("/api/fileanalyse", upload.single("upfile"), (req, res) => {
 res.json({  "name": req.file.originalname,
             "type":req.file.mimetype,
-            "size": req.file.size })
+            "size": req.file.size });
 
 });
-
 // Excercise Tracker
 app.post('/api/users', (req, res)=>{
 	const userName = req.body.username;
