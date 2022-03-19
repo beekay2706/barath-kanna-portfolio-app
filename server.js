@@ -1,4 +1,4 @@
-var database_uri = "mongodb+srv://Beekay2706:Maggibeekay2706@cluster0.zlnnw.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+var database_uri = "mongodb+srv://Beekay2706:12345@cluster0.zlnnw.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 // server.js
 // where your node app starts
 
@@ -8,6 +8,8 @@ var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 const dns = require('dns');
 const moment = require('moment');
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 const urlparser = require('url');
 var cors = require('cors');
 var app = express();
@@ -66,11 +68,22 @@ app.get("/urlshortner", function (req, res) {
 app.get("/excercisetracker", function (req, res) {
   res.sendFile(__dirname + '/views/excercisetracker.html');
 });
+app.get("/filemetadata", function (req, res) {
+	res.sendFile(__dirname + '/views/filemetadata.html');
+  });
 // your first API endpoint... 
 app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
   console.log("Hi Barath");
 });
+// File meta data microservice
+app.post("/api/fileanalyse", upload.single('upfile'), (req, res) => {
+res.json({  "name": req.file.originalname,
+            "type":req.file.mimetype,
+            "size": req.file.size })
+
+});
+
 // Excercise Tracker
 app.post('/api/users', (req, res)=>{
 	const userName = req.body.username;
